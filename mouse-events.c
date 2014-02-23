@@ -154,7 +154,7 @@ int run()
     Eina_List* n;
     Eina_Rectangle* update;
     EINA_LIST_FOREACH(updates, n, update)
-      glhckTextureFill(texture, 0, update->x, update->y, 0, update->w, update->h, 0,
+      glhckTextureFillFrom(texture, 0, update->x, update->y, 0,  update->x, update->y, 0, update->w, update->h, 0,
                        GLHCK_RGBA, GLHCK_UNSIGNED_BYTE, UI_WIDTH * UI_HEIGHT, einfo->info.dest_buffer);
 
     evas_render_updates_free(updates);
