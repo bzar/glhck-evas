@@ -22,6 +22,11 @@ int deinit();
 void errorCallback(int code, char const* message);
 void windowCloseCallback(GLFWwindow* window);
 void windowSizeCallback(GLFWwindow *handle, int width, int height);
+void cursorPosCallback(GLFWwindow* window, double x, double y);
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void cursorEnterCallback(GLFWwindow* window, int value);
+void evasMouseDownCallback(void *data, Evas *evas, Evas_Object *o, void *einfo);
+void evasMouseUpCallback(void *data, Evas *evas, Evas_Object *o, void *einfo);
 
 int init(int argc, char** argv)
 {
@@ -49,7 +54,7 @@ int init(int argc, char** argv)
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
   }
 
-  window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "glhck-evas", NULL, NULL);
+  window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "glhck-evas mouse-events", NULL, NULL);
 
   if(!window)
   {
@@ -60,6 +65,10 @@ int init(int argc, char** argv)
 
   glfwSetWindowCloseCallback(window, windowCloseCallback);
   glfwSetWindowSizeCallback(window, windowSizeCallback);
+  glfwSetCursorPosCallback(window, cursorPosCallback);
+  glfwSetMouseButtonCallback(window, mouseButtonCallback);
+  glfwSetCursorEnterCallback(window, cursorEnterCallback);
+
 
   glfwSwapInterval(1);
 
@@ -124,11 +133,19 @@ int run()
 
   Evas_Object* eobj;
   eobj = evas_object_rectangle_add(canvas);
-  evas_object_color_set(eobj, 128, 128, 128, 255);
+  evas_object_color_set(eobj, 128, 255, 128, 255);
   evas_object_move(eobj, 100, 100);
   evas_object_resize(eobj, 100, 100);
   evas_object_show(eobj);
+  evas_object_focus_set(eobj, EINA_TRUE);
+  evas_object_raise(eobj);
 
+  evas_object_event_callback_add(bg, EVAS_CALLBACK_MOUSE_DOWN, evasMouseDownCallback, NULL);
+  evas_object_event_callback_add(bg, EVAS_CALLBACK_MOUSE_UP, evasMouseUpCallback, NULL);
+
+  glfwSetWindowUserPointer(window, canvas);
+  glhckTextureFill(texture, 0, 0, 0, 0, UI_WIDTH, UI_HEIGHT, 0,
+                   GLHCK_RGBA, GLHCK_UNSIGNED_BYTE, UI_WIDTH * UI_HEIGHT, einfo->info.dest_buffer);
   while(running)
   {
     glfwPollEvents();
@@ -196,3 +213,48 @@ void windowSizeCallback(GLFWwindow *window, int width, int height)
   glhckDisplayResize(width, height);
 }
 
+
+void cursorPosCallback(GLFWwindow* window, double x, double y)
+{
+  Evas* canvas = (Evas*) glfwGetWindowUserPointer(window);
+  evas_event_feed_mouse_move(canvas, x, y, glfwGetTime() * 1000000, NULL);
+}
+
+void cursorEnterCallback(GLFWwindow* window, int value)
+{
+  Evas* canvas = (Evas*) glfwGetWindowUserPointer(window);
+  if(value == GL_TRUE)
+  {
+    evas_event_feed_mouse_in(canvas, glfwGetTime() * 1000000, NULL);
+  }
+  else if(value == GL_FALSE)
+  {
+    evas_event_feed_mouse_out(canvas, glfwGetTime() * 1000000, NULL);
+  }
+
+}
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+  Evas* canvas = (Evas*) glfwGetWindowUserPointer(window);
+
+  // TODO: handle double/triple clicks
+  if(action == GLFW_PRESS)
+  {
+    evas_event_feed_mouse_down(canvas, button + 1, EVAS_BUTTON_NONE, glfwGetTime() * 1000000, NULL);
+  }
+  else if(action == GLFW_RELEASE)
+  {
+    evas_event_feed_mouse_up(canvas, button + 1, EVAS_BUTTON_NONE, glfwGetTime() * 1000000, NULL);
+  }
+}
+
+void evasMouseDownCallback(void *data, Evas *evas, Evas_Object *o, void *einfo)
+{
+  evas_object_color_set(o, 0, 255, 0, 255);
+}
+
+void evasMouseUpCallback(void *data, Evas *evas, Evas_Object *o, void *einfo)
+{
+  evas_object_color_set(o, 255, 0, 255, 255);
+}
