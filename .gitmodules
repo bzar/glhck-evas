@@ -4,3 +4,6 @@
 [submodule "lib/glfw"]
 	path = lib/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "lib/glfwhck"]
+	path = lib/glfwhck
+	url = https://github.com/bzar/glfwhck.git

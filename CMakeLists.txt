@@ -14,13 +14,14 @@ pkg_check_modules(EFL REQUIRED evas ecore eina ecore-evas eo)
 include_directories(
     ${kazmath_SOURCE_DIR}/src
     ${glhck_SOURCE_DIR}/include
+    ${glfwhck_SOURCE_DIR}/include
     ${GLFW_SOURCE_DIR}/include
     ${EFL_INCLUDE_DIRS}
 )
 
 add_executable(simple-render simple-render.c)
-target_link_libraries(simple-render glfw glhck ${GLHCK_LIBRARIES} ${GLFW_LIBRARIES} ${EFL_LIBRARIES})
+target_link_libraries(simple-render glfw glfwhck glhck ${GLHCK_LIBRARIES} ${GLFW_LIBRARIES} ${EFL_LIBRARIES})
 
 add_executable(mouse-events mouse-events.c)
-target_link_libraries(mouse-events glfw glhck ${GLHCK_LIBRARIES} ${GLFW_LIBRARIES} ${EFL_LIBRARIES})
+target_link_libraries(mouse-events glfw glfwhck glhck ${GLHCK_LIBRARIES} ${GLFW_LIBRARIES} ${EFL_LIBRARIES})
 
