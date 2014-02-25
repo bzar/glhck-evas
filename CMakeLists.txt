@@ -10,7 +10,9 @@ SET(GLFW_BUILD_TESTS 0 CACHE BOOL "Don't build tests for GLFW")
 add_subdirectory(lib)
 find_package(PkgConfig REQUIRED)
 #add_definitions(-DEFL_EO_API_SUPPORT)
-pkg_check_modules(EFL REQUIRED evas ecore eina ecore-evas eo)
+pkg_check_modules(EFL REQUIRED evas ecore eina elementary)
+message("$EFL_INCLUDE_DIRS:" ${EFL_INCLUDE_DIRS})
+message("EFL_LIBRARIES:" ${EFL_LIBRARIES})
 include_directories(
     ${kazmath_SOURCE_DIR}/src
     ${glhck_SOURCE_DIR}/include
@@ -24,4 +26,7 @@ target_link_libraries(simple-render glfw glfwhck glhck ${GLHCK_LIBRARIES} ${GLFW
 
 add_executable(mouse-events mouse-events.c)
 target_link_libraries(mouse-events glfw glfwhck glhck ${GLHCK_LIBRARIES} ${GLFW_LIBRARIES} ${EFL_LIBRARIES})
+
+add_executable(elementary-ui elementary-ui.c)
+target_link_libraries(elementary-ui glfw glfwhck glhck ${GLHCK_LIBRARIES} ${GLFW_LIBRARIES} ${EFL_LIBRARIES})
 
