@@ -89,8 +89,9 @@ int run()
   glhckObjectPositionf(object, WINDOW_WIDTH/2.0f, WINDOW_HEIGHT/2.0f, 0);
 
   glhckTexture* texture = glhckTextureNew();
-  glhckTextureCreate(texture, GLHCK_TEXTURE_2D, 0, UI_WIDTH, UI_HEIGHT, 0, 0, GLHCK_RGBA, GLHCK_UNSIGNED_BYTE, UI_WIDTH * UI_HEIGHT, NULL);
-  glhckTextureParameter(texture, glhckTextureDefaultParameters());
+  glhckTextureCreate(texture, GLHCK_TEXTURE_2D, 0, UI_WIDTH, UI_HEIGHT, 0, 0,
+                     GLHCK_RGBA, GLHCK_UNSIGNED_BYTE, UI_WIDTH * UI_HEIGHT, NULL);
+  glhckTextureParameter(texture, glhckTextureDefaultSpriteParameters());
   glhckMaterial* material = glhckMaterialNew(texture);
   glhckTextureFree(texture);
   glhckObjectMaterial(object, material);
