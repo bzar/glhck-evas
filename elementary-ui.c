@@ -78,8 +78,6 @@ int init(int argc, char** argv)
   glhckRenderClearColorb(64, 64, 64, 255);
 
   // ECORE / EVAS
-  ecore_init();
-  evas_init();
   elm_init(argc, argv);
 
   return EXIT_SUCCESS;
