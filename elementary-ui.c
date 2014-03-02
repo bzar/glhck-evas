@@ -85,6 +85,7 @@ int init(int argc, char** argv)
 
 int run()
 {
+  glhckSetGlobalPrecision(GLHCK_IDX_USHRT, GLHCK_VTX_V3F);
   glhckObject* object = glhckPlaneNew(UI_WIDTH, UI_HEIGHT);
   glhckObjectPositionf(object, WINDOW_WIDTH/2.0f, WINDOW_HEIGHT/2.0f, 0);
 
@@ -160,9 +161,20 @@ int run()
           }
           break;
         case GLFWHCK_EVENT_MOUSE_POSITION:
-          evas_event_feed_mouse_move(canvas, event->mousePosition.x, event->mousePosition.y, glfwGetTime() * 1000000, NULL);
-          evas_object_move(cursor, event->mousePosition.x, event->mousePosition.y);
+        {
+          kmRay3 mouseRay = {
+            {event->mousePosition.x, event->mousePosition.y, -1},
+            {0, 0, 1}
+          };
+
+          kmVec2 coords;
+          if(glhckObjectPickTextureCoordinatesWithRay(object, &mouseRay, &coords))
+          {
+            evas_event_feed_mouse_move(canvas, coords.x * UI_WIDTH, coords.y * UI_HEIGHT, glfwGetTime() * 1000000, NULL);
+            evas_object_move(cursor, coords.x * UI_WIDTH, coords.y * UI_HEIGHT);
+          }
           break;
+        }
         case GLFWHCK_EVENT_MOUSE_BUTTON:
           if(event->mouseButton.action == GLFW_PRESS)
           {
