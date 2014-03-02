@@ -8,8 +8,8 @@
 #include "GLFW/glfw3.h"
 #include "glfwhck.h"
 
-int const WINDOW_WIDTH = 800;
-int const WINDOW_HEIGHT = 480;
+int WINDOW_WIDTH = 800;
+int WINDOW_HEIGHT = 480;
 
 int const UI_WIDTH = 600;
 int const UI_HEIGHT = 400;
@@ -92,8 +92,9 @@ int run()
   glhckTexture* texture = glhckTextureNew();
   glhckTextureCreate(texture, GLHCK_TEXTURE_2D, 0, UI_WIDTH, UI_HEIGHT, 0, 0,
                      GLHCK_RGBA, GLHCK_UNSIGNED_BYTE, UI_WIDTH * UI_HEIGHT, NULL);
-  glhckTextureParameter(texture, glhckTextureDefaultSpriteParameters());
+  glhckTextureParameter(texture, glhckTextureDefaultLinearParameters());
   glhckMaterial* material = glhckMaterialNew(texture);
+  glhckMaterialBlendFunc(material, GLHCK_SRC_ALPHA, GLHCK_ONE_MINUS_SRC_ALPHA);
   glhckTextureFree(texture);
   glhckObjectMaterial(object, material);
   glhckMaterialFree(material);
@@ -114,7 +115,7 @@ int run()
   evas_engine_info_set(canvas, (Evas_Engine_Info *)einfo);
 
   Evas_Object* bg = evas_object_rectangle_add(canvas);
-  evas_object_color_set(bg, 240, 0, 240, 255);
+  evas_object_color_set(bg, 240, 0, 240, 0);
   evas_object_move(bg, 0, 0);
   evas_object_resize(bg, UI_WIDTH, UI_HEIGHT);
   evas_object_show(bg);
@@ -124,6 +125,92 @@ int run()
   evas_object_move(btn, UI_WIDTH/2-50, UI_HEIGHT-50);
   evas_object_resize(btn, 100, 44);
   evas_object_show(btn);
+
+  Evas_Object* label = elm_label_add(bg);
+  elm_object_text_set(label, "O HAI!");
+  evas_object_show(label);
+
+  Evas_Object* bubble = elm_bubble_add(bg);
+  evas_object_move(bubble, 0, -18);
+  evas_object_resize(bubble, 60, 50);
+  elm_object_content_set(bubble, label);
+  evas_object_show(bubble);
+
+  Evas_Object* as = elm_actionslider_add(bg);
+  evas_object_move(as, UI_WIDTH/2-75, 0);
+  evas_object_resize(as, 150, 50);
+  elm_actionslider_indicator_pos_set(as, ELM_ACTIONSLIDER_CENTER);
+  elm_actionslider_magnet_pos_set(as, ELM_ACTIONSLIDER_CENTER);
+  elm_object_part_text_set(as, "left", "Die");
+  elm_object_part_text_set(as, "right", "Live");
+  elm_actionslider_enabled_pos_set(as, ELM_ACTIONSLIDER_LEFT | ELM_ACTIONSLIDER_RIGHT);
+  evas_object_show(as);
+
+  Evas_Object* cal = elm_calendar_add(bg);
+  evas_object_resize(cal, 200, 200);
+  evas_object_size_hint_weight_set(cal, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  evas_object_show(cal);
+
+  Evas_Object* f1 = elm_frame_add(bg);
+  evas_object_move(f1, UI_WIDTH-200, UI_HEIGHT-200);
+  evas_object_resize(f1, 200, 200);
+  elm_object_content_set(f1, cal);
+  elm_object_text_set(f1, "Calendar");
+  evas_object_show(f1);
+
+  Evas_Object* ck = elm_clock_add(bg);
+  evas_object_resize(ck, 100, 80);
+  elm_clock_show_seconds_set(ck, EINA_TRUE);
+  evas_object_show(ck);
+
+  Evas_Object* f2 = elm_frame_add(bg);
+  evas_object_move(f2, 0, UI_HEIGHT-80);
+  evas_object_resize(f2, 100, 80);
+  elm_object_content_set(f2, ck);
+  elm_object_text_set(f2, "Clock");
+  evas_object_show(f2);
+
+  Evas_Object* ewidth = elm_entry_add(bg);
+  evas_object_resize(ewidth, 150, 44);
+  elm_entry_single_line_set(ewidth, EINA_TRUE);
+  elm_object_text_set(ewidth, "Type something...");
+  evas_object_size_hint_weight_set(ewidth, EVAS_HINT_EXPAND, 0.0);
+  evas_object_size_hint_align_set(ewidth, EVAS_HINT_FILL, EVAS_HINT_FILL);
+  evas_object_show(ewidth);
+
+  Evas_Object* f3 = elm_frame_add(bg);
+  evas_object_move(f3, UI_WIDTH-150, 0);
+  evas_object_resize(f3, 150, 44);
+  elm_object_content_set(f3, ewidth);
+  elm_object_text_set(f3, "Entry box");
+  evas_object_show(f3);
+
+  Evas_Object* pb = elm_progressbar_add(bg);
+  evas_object_move(pb, 70, 10);
+  evas_object_resize(pb, 20, 20);
+  evas_object_size_hint_align_set(pb, EVAS_HINT_FILL, 0.5);
+  evas_object_size_hint_weight_set(pb, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_progressbar_pulse_set(pb, EINA_TRUE);
+  elm_progressbar_pulse(pb, EINA_TRUE);
+  evas_object_show(pb);
+
+  Evas_Object* pb2 = elm_progressbar_add(bg);
+  evas_object_move(pb2, 100, 10);
+  evas_object_resize(pb2, 100, 20);
+  evas_object_size_hint_align_set(pb2, EVAS_HINT_FILL, 0.5);
+  evas_object_size_hint_weight_set(pb2, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+  elm_progressbar_value_set(pb2, 0.5f);
+  evas_object_show(pb2);
+
+  Evas_Object* vf = elm_video_add(bg);
+  /*elm_video_file_set(vf, "http://mirror.bigbuckbunny.de/peach/bigbuckbunny_movies/big_buck_bunny_480p_stereo.ogg");
+  elm_video_play(vf);*/
+
+  Evas_Object* vd = elm_player_add(bg);
+  evas_object_resize(vd, 260, 260);
+  evas_object_move(vd, UI_WIDTH/2-180, UI_HEIGHT/2-130);
+  elm_object_content_set(vd, vf);
+  evas_object_show(vd);
 
   Evas_Object* cursor = evas_object_rectangle_add(canvas);
   evas_object_color_set(cursor, 255, 255, 255, 255);
@@ -142,6 +229,13 @@ int run()
   glfwhckEventQueue* queue = glfwhckEventQueueNew(window, GLFWHCK_EVENTS_ALL);
   char running = 1;
 
+  glhckText *text = glhckTextNew(512, 512);
+  unsigned int font = glhckTextFontNew(text, "/usr/share/fonts/TTF/DejaVuSans.ttf");
+  glhckObject *rttText = glhckTextPlane(text, font, 42, "GLHCK IS AWESOME!", NULL);
+
+  glhckObject *cube = glhckCubeNew(50.0f);
+  glhckObjectMaterial(cube, material);
+
   while(running)
   {
     glfwPollEvents();
@@ -154,6 +248,10 @@ int run()
         case GLFWHCK_EVENT_WINDOW_CLOSE:
           running = 0;
           break;
+        case GLFWHCK_EVENT_WINDOW_RESIZE:
+          WINDOW_WIDTH = event->windowResize.width;
+          WINDOW_HEIGHT = event->windowResize.height;
+          glhckDisplayResize(WINDOW_WIDTH, WINDOW_HEIGHT);
         case GLFWHCK_EVENT_KEYBOARD_KEY:
           if(event->keyboardKey.key == GLFW_KEY_ESCAPE)
           {
@@ -163,7 +261,7 @@ int run()
         case GLFWHCK_EVENT_MOUSE_POSITION:
         {
           kmRay3 mouseRay = {
-            {event->mousePosition.x, event->mousePosition.y, -1},
+            {event->mousePosition.x, event->mousePosition.y, -1000},
             {0, 0, 1}
           };
 
@@ -213,6 +311,21 @@ int run()
                        GLHCK_RGBA, GLHCK_UNSIGNED_BYTE, UI_WIDTH * UI_HEIGHT, einfo->info.dest_buffer);
 
     evas_render_updates_free(updates);
+
+    glhckRenderFlip(0);
+    glhckRenderCullFace(GLHCK_FRONT);
+    glhckObjectRender(cube);
+    glhckObjectRotatef(cube, 0.0f, 1.0f, 0.0f);
+    glhckObjectPositionf(cube, 100, 200, -100.0f);
+
+    glhckRenderFlip(1);
+    glhckRenderCullFace(GLHCK_BACK);
+    glhckObjectPositionf(rttText, sin(glfwGetTime()) * 200.0f + 800/2, 480/2, -10.0f);
+    glhckObjectRender(rttText);
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE)) {
+      glhckObjectRotatef(object, 0, 0, 1.0f);
+    }
 
     glhckRenderFlip(0);
     glhckRenderCullFace(GLHCK_FRONT);
